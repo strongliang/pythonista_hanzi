@@ -24,17 +24,32 @@ view_x, view_y, view_w, view_h = view.bounds
 BLACK = (0, 0, 0, 1)
 WHITE = (1, 1, 1, 1)
 
+global_show_hide_switch = True
 
-def button_tapped(sender):
-    # pinyin = sender.superview['label1']
+
+def show_one_zi(sender):
+    yin = sender.superview['yin']
+    if yin.text_color == WHITE:
+        yin.text_color = BLACK
+    else:
+        yin.text_color = WHITE
+
+
+def show_all_zi(sender):
+    global global_show_hide_switch
     for elem in view.subviews:
-        if isinstance(elem, ui.Label):
-            if elem.text_color == WHITE:
-                elem.text_color = BLACK
+        if isinstance(elem, ui.View) and elem['yin']:
+            yin = elem['yin']
+            if global_show_hide_switch:
+                yin.text_color = BLACK
                 big_button.title = 'hide'
+                new_value = False
             else:
-                elem.text_color = WHITE
+                yin.text_color = WHITE
                 big_button.title = 'show'
+                new_value = True
+
+    global_show_hide_switch = new_value
 
 
 # converting pinyin and charaters into lists are tricky
@@ -49,46 +64,51 @@ def init_data():
     for ch in han.decode('utf-8'):
         button = ui.Button(title=ch)
         button.font = ('<system>', 30)
+        button.action = show_one_zi
+        button.width, button.height = 80, 40
         zi_lst.append(button)
+
     for p in pin.decode('utf-8').split(' '):
         label = ui.Label()
+        label.name = 'yin'
         label.text = p
         label.text_color = WHITE
         label.alignment = ui.ALIGN_CENTER
+        label.width, label.height = 80, 40
         yin_lst.append(label)
 
     assert len(zi_lst) == len(yin_lst)
     num_zi = len(zi_lst)
+    group_lst = []
+
+    for i in xrange(num_zi):
+        group = ui.View()
+        group.width, group.height = 80, 80
+        yin = yin_lst[i]
+        yin.x, yin.y = group.x, group.y
+        group.add_subview(yin)
+        zi = zi_lst[i]
+        zi.x, zi.y = group.x, group.y + zi_h
+        group.add_subview(zi)
+        group_lst.append(group)
 
     debug.text += 'num_zi: ' + str(num_zi)
     # only even number of lines
     num_row = int((view_h - hor_margin * 2) / (zi_h + line_spacing)) / 2 * 2
     num_col = int((view_w - ver_margin * 2) / (zi_w + zi_spacing))
 
-    debug.text += 'num_row: ' + str(num_row)
-    debug.text += 'num_col: ' + str(num_col)
-
-    zi_count, yin_count = 0, 0
+    zi_count = 0
     for row in xrange(num_row):
         for col in xrange(num_col):
             try:
-                if row % 2 == 0 and yin_count < num_zi:
-                    label = yin_lst.pop(0)
-                    label.x = view.x + hor_margin + (zi_w + zi_spacing) * col
-                    label.y = view.y + ver_margin + (zi_h + line_spacing) * row
-                    label.width = 80
-                    label.height = 40
-                    view.add_subview(label)
-                    yin_count += 1
-                elif row % 2 == 1 and zi_count < num_zi:
-                    button = zi_lst.pop(0)
-                    button.x = view.x + hor_margin + (zi_w + zi_spacing) * col
-                    button.y = view.y + ver_margin + (zi_h + line_spacing) * row
-                    button.width = 80
-                    button.height = 40
-                    button.action = button_tapped
-                    view.add_subview(button)
-                    zi_count += 1
+                if zi_count >= num_zi:
+                    break
+                group = group_lst[zi_count]
+                group.x = view.x + hor_margin + (zi_w + zi_spacing) * col
+                group.y = view.y + ver_margin + (zi_h*2 + line_spacing) * row
+                view.add_subview(group)
+                zi_count += 1
+
             except Exception as e:
                 debug.text += str(e)
                 debug.text += 'zi_count: ' + str(zi_count) + '\n'
@@ -96,10 +116,6 @@ def init_data():
 
 init_data()
 
-# debug.text += 'num_zi is: ' + str(num_zi) + '\n'
-
-
-
-big_button.action = button_tapped
+big_button.action = show_all_zi
 
 view.present('sheet')
