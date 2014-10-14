@@ -3,6 +3,10 @@ import ui
 
 view = ui.load_view('hanzi')
 
+scroll = view['scrollview1']
+scroll.x, scroll.y = view.x, view.y
+scroll.width, scroll.height = view.width, view.height
+view.add_subview(scroll)
 big_button = view['button1']
 
 
@@ -37,7 +41,7 @@ def show_one_zi(sender):
 
 def show_all_zi(sender):
     global global_show_hide_switch
-    for elem in view.subviews:
+    for elem in scroll.subviews:
         if isinstance(elem, ui.View) and elem['yin']:
             yin = elem['yin']
             if global_show_hide_switch:
@@ -54,7 +58,7 @@ def show_all_zi(sender):
 
 # converting pinyin and charaters into lists are tricky
 # notice the placement of spaces in the pinyin string
-def init_data():
+def display_data():
     # han = '我是一个粉刷匠，粉刷本领强。'
     # pin = 'Wǒ shì yī gè fěn shuā jiàng ， fěn shuā běn lǐng qiáng 。'
     han = '则需要满足技术指标才能获得资金，而且签订的协议阻止公司向其他公司供应蓝宝石材料。'
@@ -93,10 +97,11 @@ def init_data():
         group.add_subview(zi)
         group_lst.append(group)
 
-    # debug.text += 'num_zi: ' + str(num_zi)
     # only even number of lines
-    num_row = int((view_h - hor_margin * 2) / (zi_h + line_spacing)) / 2 * 2
+    # num_row = int((view_h - hor_margin * 2) / (zi_h + line_spacing)) / 2 * 2
     num_col = int((view_w - ver_margin * 2) / (zi_w + zi_spacing))
+    num_row = num_zi / num_col / 2 * 2
+    scroll.content_size = (scroll.width, num_row * zi_h * 2 + ver_margin * 2)
 
     zi_count = 0
     for row in xrange(num_row):
@@ -105,9 +110,9 @@ def init_data():
                 if zi_count >= num_zi:
                     break
                 group = group_lst[zi_count]
-                group.x = view.x + hor_margin + (zi_w + zi_spacing) * col
-                group.y = view.y + ver_margin + (zi_h*2 + line_spacing) * row
-                view.add_subview(group)
+                group.x = scroll.x + hor_margin + (zi_w + zi_spacing) * col
+                group.y = scroll.y + ver_margin + (zi_h*2 + line_spacing) * row
+                scroll.add_subview(group)
                 zi_count += 1
 
             except Exception as e:
@@ -115,7 +120,10 @@ def init_data():
                 debug.text += 'zi_count: ' + str(zi_count) + '\n'
                 break
 
-init_data()
+    debug.text += 'num_zi: ' + str(num_zi) + '\n'
+    debug.text += 'num_row: ' + str(num_row) + '\n'
+
+display_data()
 
 big_button.action = show_all_zi
 
