@@ -55,9 +55,10 @@ def show_all_zi(sender):
 # converting pinyin and charaters into lists are tricky
 # notice the placement of spaces in the pinyin string
 def init_data():
-    han = '我是一个粉刷匠，粉刷本领强。'
-    pin = 'Wǒ shì yī gè fěn shuā jiàng ， fěn shuā běn lǐng qiáng 。'
-
+    # han = '我是一个粉刷匠，粉刷本领强。'
+    # pin = 'Wǒ shì yī gè fěn shuā jiàng ， fěn shuā běn lǐng qiáng 。'
+    han = '则需要满足技术指标才能获得资金，而且签订的协议阻止公司向其他公司供应蓝宝石材料。'
+    pin = 'zé xū yào mǎn zú jì shù zhǐ biāo cái néng huò dé zī jīn ， ér qiě qiān dìng de xié yì zǔ zhǐ gōng sī xiàng qí tā gōng sī gōng yìng lán bǎo shí cái liào 。'
     zi_lst = []
     yin_lst = []
 
@@ -92,7 +93,7 @@ def init_data():
         group.add_subview(zi)
         group_lst.append(group)
 
-    debug.text += 'num_zi: ' + str(num_zi)
+    # debug.text += 'num_zi: ' + str(num_zi)
     # only even number of lines
     num_row = int((view_h - hor_margin * 2) / (zi_h + line_spacing)) / 2 * 2
     num_col = int((view_w - ver_margin * 2) / (zi_w + zi_spacing))
@@ -118,4 +119,4 @@ init_data()
 
 big_button.action = show_all_zi
 
-view.present('sheet')
+view.present('fullscreen')
