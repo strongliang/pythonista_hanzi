@@ -3,23 +3,26 @@ import ui
 
 view = ui.load_view('hanzi')
 
+view.width, view.height = ui.get_screen_size()
+
 scroll = view['scrollview1']
 scroll.x, scroll.y = view.x, view.y
 scroll.width, scroll.height = view.width, view.height
 view.add_subview(scroll)
 big_button = view['button1']
+scroll.add_subview(big_button)
 
 
 debug = view['textview1']
 debug.text = ''
 
 # global settings
-zi_w = 80  # hanzi width
-zi_h = 40  # hanzi height
-hor_margin = 40  # horizontal margin
-ver_margin = 40  # vertical margin
+zi_w = 40  # hanzi width
+zi_h = 30  # hanzi height
+hor_margin = 5  # horizontal margin
+ver_margin = 1  # vertical margin
 
-zi_spacing = 1
+zi_spacing = 5
 line_spacing = 1
 
 view_x, view_y, view_w, view_h = view.bounds
@@ -61,8 +64,9 @@ def show_all_zi(sender):
 def display_data():
     # han = '我是一个粉刷匠，粉刷本领强。'
     # pin = 'Wǒ shì yī gè fěn shuā jiàng ， fěn shuā běn lǐng qiáng 。'
-    han = '则需要满足技术指标才能获得资金，而且签订的协议阻止公司向其他公司供应蓝宝石材料。'
-    pin = 'zé xū yào mǎn zú jì shù zhǐ biāo cái néng huò dé zī jīn ， ér qiě qiān dìng de xié yì zǔ zhǐ gōng sī xiàng qí tā gōng sī gōng yìng lán bǎo shí cái liào 。'
+    han = '则需要满足技术指标才能获得资金，而且签订的协议阻止公司向其他公司供应蓝宝石材料。' * 5
+    pin = 'zé xū yào mǎn zú jì shù zhǐ biāo cái néng huò dé zī jīn ， ér qiě qiān dìng de xié yì zǔ zhǐ gōng sī xiàng qí tā gōng sī gōng yìng lán bǎo shí cái liào 。 ' * 5
+    pin = pin.strip()
     zi_lst = []
     yin_lst = []
 
@@ -98,8 +102,7 @@ def display_data():
         group_lst.append(group)
 
     # only even number of lines
-    # num_row = int((view_h - hor_margin * 2) / (zi_h + line_spacing)) / 2 * 2
-    num_col = int((view_w - ver_margin * 2) / (zi_w + zi_spacing))
+    num_col = int((view_w - hor_margin * 2) / (zi_w + zi_spacing))
     num_row = num_zi / num_col / 2 * 2
     scroll.content_size = (scroll.width, num_row * zi_h * 2 + ver_margin * 2)
 
@@ -128,3 +131,4 @@ display_data()
 big_button.action = show_all_zi
 
 view.present('fullscreen')
+
